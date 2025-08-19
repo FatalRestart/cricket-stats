@@ -8,16 +8,76 @@
     <title>Document</title>
 </head>
 <body>
+    <div class="container">
+        <section class="conteudo center">
+            <h1 class="rubik-500 texto">Test eventos</h1>
+            <p class="rubik-300 texto desc">
+                Página de teste
+            </p>
 
-    <div class="card-container">
-        <div class="status"></div>
-        <div class="teams">
-            <h2 class="team1">Time1</h2>
-            <h2 class="VS">VS</h2>
-            <h2 class="team2">Time2</h2>
-        </div>
-        <h3 class="data">data</h3>
+            <h1 class="rubik-500 texto">Em andamento:</h1>
+            <div class="gap">
+                <div class="cards-horizontal" id="cards-em-andamento">
+
+                <div class="card-evento">
+                    <a href="" class="texto">
+                        <div class="card-container">
+                            <div class="status1 rubik-700">${matchStatus}</div>
+                            <div class="teams">
+                                <h2 class="team1 rubik-500">${evento.categories[0].categoryValue}</h2>
+                                <h2 class="VS rubik-500">VS</h2>
+                                <h2 class="team2 rubik-500">${evento.categories[1].categoryValue}</h2>
+                            </div>
+                            <h3 class="data rubik-300">${new Date(evento.startDate).toLocaleString("pt-br")}</h3>
+                            
+                        </div>
+                    </a>
+                </div>
+
+
+                </div>
+            </div>
+
+            <h1 class="rubik-500 texto">Teste:</h1>
+            <div class="gap">
+                <div class="cards-horizontal" id="cards-container">
+
+                    <div class="card-evento">
+                    <a href="" class="texto">
+                        <div class="card-container">
+                            <div class="status3 rubik-700">${matchStatus}</div>
+                            <div class="teams">
+                                <h2 class="team1 rubik-500">${evento.categories[0].categoryValue}</h2>
+                                <h2 class="VS rubik-500">VS</h2>
+                                <h2 class="team2 rubik-500">${evento.categories[1].categoryValue}</h2>
+                            </div>
+                            <h3 class="data rubik-300">${new Date(evento.startDate).toLocaleString("pt-br")}</h3>
+                            
+                        </div>
+                    </a>
+                </div>
+                <div class="cards-horizontal" id="cards-container">
+
+                <div class="card-evento">
+                    <a href="" class="texto">
+                        <div class="card-container">
+                            <div class="status0 rubik-700">${matchStatus}</div>
+                            <div class="teams">
+                                <h2 class="team1 rubik-500">${evento.categories[0].categoryValue}</h2>
+                                <h2 class="VS rubik-500">VS</h2>
+                                <h2 class="team2 rubik-500">${evento.categories[1].categoryValue}</h2>
+                            </div>
+                            <h3 class="data rubik-300">${new Date(evento.startDate).toLocaleString("pt-br")}</h3>
+                            
+                        </div>
+                    </a>
+                </div>
+
+                </div>
+            </div>
+        </section>
     </div>
+    
     
 
 

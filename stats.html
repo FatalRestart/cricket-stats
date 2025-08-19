@@ -7,6 +7,21 @@
     <link rel="stylesheet" href="css/base.css">
 </head>
 <body>
+    <header>
+        <h1 class="rubik-700 texto">
+            cricket live stats
+        </h1>
+    </header>
+
+    <div class="dados">
+        <h1 class="rubik-500 texto" > Dados da partida: </h1>
+        <h2 class="rubik-500 texto" id="matchTitle">Jogo:  </h2>
+        <h2 class="rubik-500 texto" id="status"> Status: </h2>
+        <h2 class="rubik-500 texto" id="idJogo"> ID: </h2>
+        
+
+    </div>
+    
     
 </body>
 <script>
@@ -19,7 +34,33 @@
     try {
         const response = await fetch(`https://lsc.fn.sportradar.com/common/en/Etc:UTC/cricket/get_scorecard/${ID}`);
         const scoreData = await response.json();
-        console.log(scoreData)
+        
+        match = scoreData.doc[0].data.score
+
+        switch(match.matchStatus){
+            case 0:
+                status = "Não iniciado"
+                break
+            case 1:
+                status = "Em andamento"
+                break
+            case 2:
+                status = "Em andamento"
+                break
+            case 3:
+                status = "Finalizado"
+                break
+            default:
+                status = "indefinido"
+        }
+
+        console.log(match)
+
+        document.getElementById('matchTitle').innerText += " " + match.matchTitle || 'Partida';
+        document.getElementById('status').innerText += " " + status || 'Partida';
+        document.getElementById('idJogo').innerText += " " + ID || 'Partida';
+        document.getElementById('eventoData').innerText = new Date(info?.startDate).toLocaleString();
+        document.getElementById('eventoStatus').innerText = "Em andamento";
 
     } catch (error) {
         console.error('Erro ao buscar scorecard:', error);

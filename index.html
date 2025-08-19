@@ -64,14 +64,14 @@ async function fetchEventos() {
         let eventos = data.doc[0]?.data?.sportEvents || [];
 
         // ordena por data
-        eventos.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+        eventos.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
 
         // Em andamento (status === 1)
         const eventosEmAndamento = eventos.filter(e => e.status === 1);
         renderEventos(eventosEmAndamento, 'cards-em-andamento', true);
 
         // Em destaque (futuros)
-        const eventosEmDestaque = eventos.filter(e => new Date(e.startDate) >= new Date());
+        const eventosEmDestaque = eventos.filter(e => new Date(e.startDate) >= new Date() && e.status != 1);
         renderEventos(eventosEmDestaque, 'cards-container', false);
 
     } catch (error) {
@@ -113,15 +113,15 @@ function renderEventos(lista, containerId, emAndamento) {
         
 
         card.innerHTML = `
-        <a href="./stats.html?id=${evento.premiumCricketEventId}" class="texto">
+        <a href="./stats.html?id=${evento.premiumCricketEventId}" class="hyperlink">
             <div class="card-container">
-                <div class="${statusClass} texto rubik-700">${matchStatus}</div>
-                <div class="teams texto">
-                    <h2 class="team1 texto rubik-500">${evento.categories[0].categoryValue}</h2>
-                    <h2 class="VS texto rubik-500">VS</h2>
-                    <h2 class="team2 texto rubik-500">${evento.categories[1].categoryValue}</h2>
+                <div class="${statusClass} rubik-700">${matchStatus}</div>
+                <div class="teams">
+                    <h2 class="team1 rubik-500">${evento.categories[0].categoryValue}</h2>
+                    <h2 class="VS rubik-500">VS</h2>
+                    <h2 class="team2 rubik-500">${evento.categories[1].categoryValue}</h2>
                 </div>
-                <h3 class="data texto rubik-300">${new Date(evento.startDate).toLocaleString("pt-br")}</h3>
+                <h3 class="data rubik-300">${new Date(evento.startDate).toLocaleString("pt-br")}</h3>
                 
             </div>
         </a>
@@ -131,76 +131,12 @@ function renderEventos(lista, containerId, emAndamento) {
     });
 }
 
-async function fetchScorecard(eventId) {
-    try {
-        const response = await fetch(`https://lsc.fn.sportradar.com/common/en/Etc:UTC/cricket/get_scorecard/${eventId}`);
-        const scoreData = await response.json();
-
-        const match = scoreData.doc[0]?.data.score;
-        const info = match?.matchInfo;
-        const innings = match?.innings;
-
-        document.getElementById('eventoNome').innerText = match.matchTitle || 'Partida';
-        document.getElementById('eventoCompeticao').innerText = info?.competition;
-        document.getElementById('eventoFormato').innerText = info?.format;
-        document.getElementById('eventoData').innerText = new Date(info?.startDate).toLocaleString();
-        document.getElementById('eventoStatus').innerText = "Em andamento";
-        console.log(eventId)
-
-        let placar = "";
-        innings?.forEach(inn => {
-            placar += `${inn.battingTeam}: ${inn.runs}/${inn.wickets} em ${inn.overs} overs\n`;
-        });
-        document.getElementById('eventoTimes').innerText = placar;
-
-        document.getElementById('eventoModal').style.display = 'block';
-
-    } catch (error) {
-        console.error('Erro ao buscar scorecard:', error);
-    }
-}
-
-function showEventoDetails(evento) {
-    document.getElementById('eventoNome').innerText = evento.eventName;
-    document.getElementById('eventoCompeticao').innerText = evento.competition;
-    document.getElementById('eventoFormato').innerText = evento.format;
-    document.getElementById('eventoData').innerText = new Date(evento.startDate).toLocaleString("pt-br");
-    document.getElementById('eventoStatus').innerText = evento.status;
-
-    const teams = evento.categories
-        .filter(cat => cat.eventCategoryType === "Team1" || cat.eventCategoryType === "Team2")
-        .map(cat => cat.categoryValue)
-        .join(" vs ");
-    document.getElementById('eventoTimes').innerText = teams;
-
-    document.getElementById('eventoModal').style.display = 'block';
-}
-
-window.onclick = (event) => {
-    if (event.target === document.getElementById('eventoModal')) {
-        document.getElementById('eventoModal').style.display = 'none';
-    }
-}
-
 document.addEventListener('DOMContentLoaded', fetchEventos);
 </script>
 
 <body>
-    <!-- Modal -->
-    <div id="eventoModal" class="modal">
-        <div class="modal-content">
-            <h2 id="eventoNome" class="eventoTexto"></h2>
-            <p class="eventoTexto"><strong>Nome do evento:</strong> <span id="eventoNome"></span></p>
-            <p class="eventoTexto"><strong>Times / Placar:</strong> <span id="eventoTimes"></span></p>
-            <p class="eventoTexto"><strong>Competição:</strong> <span id="eventoCompeticao"></span></p>
-            <p class="eventoTexto"><strong>Formato:</strong> <span id="eventoFormato"></span></p>
-            <p class="eventoTexto"><strong>Data:</strong> <span id="eventoData"></span></p>
-            <p class="eventoTexto"><strong>Status:</strong> <span id="eventoStatus"></span></p>
-        </div>
-    </div>
-
     <header>
-        <h1>
+        <h1 class="rubik-700 texto">
             cricket live stats
         </h1>
     </header>
@@ -214,17 +150,17 @@ document.addEventListener('DOMContentLoaded', fetchEventos);
     <!-- Conteúdo -->
     <div class="container">
         <section class="conteudo center">
-            <h1 class="rubik-500">Eventos</h1>
-            <p class="rubik-300">
+            <h1 class="rubik-500 texto">Eventos</h1>
+            <p class="rubik-300 texto desc">
                 Confira os próximos jogos e acompanhe os eventos de cricket em tempo real.
             </p>
 
-            <h1 class="rubik-500">Em andamento:</h1>
-            <div class="gap">
+            <h1 class="rubik-500 texto">Em andamento:</h1>
+            <div class="gap center">
                 <div class="cards-horizontal" id="cards-em-andamento"></div>
             </div>
 
-            <h1 class="rubik-500">Em destaque:</h1>
+            <h1 class="rubik-500 texto">Proximos jogos:</h1>
             <div class="gap">
                 <div class="cards-horizontal" id="cards-container"></div>
             </div>
