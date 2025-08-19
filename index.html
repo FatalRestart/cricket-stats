@@ -115,13 +115,13 @@ function renderEventos(lista, containerId, emAndamento) {
         card.innerHTML = `
         <a href="./stats.html?id=${evento.premiumCricketEventId}" class="texto">
             <div class="card-container">
-                <div class="${statusClass} texto">${matchStatus}</div>
+                <div class="${statusClass} texto rubik-700">${matchStatus}</div>
                 <div class="teams texto">
-                    <h2 class="team1 texto">${evento.categories[0].categoryValue}</h2>
-                    <h2 class="VS texto">VS</h2>
-                    <h2 class="team2 texto">${evento.categories[1].categoryValue}</h2>
+                    <h2 class="team1 texto rubik-500">${evento.categories[0].categoryValue}</h2>
+                    <h2 class="VS texto rubik-500">VS</h2>
+                    <h2 class="team2 texto rubik-500">${evento.categories[1].categoryValue}</h2>
                 </div>
-                <h3 class="data texto">${new Date(evento.startDate).toLocaleString("pt-br")}</h3>
+                <h3 class="data texto rubik-300">${new Date(evento.startDate).toLocaleString("pt-br")}</h3>
                 
             </div>
         </a>
@@ -214,17 +214,17 @@ document.addEventListener('DOMContentLoaded', fetchEventos);
     <!-- Conteúdo -->
     <div class="container">
         <section class="conteudo center">
-            <h1>Eventos</h1>
-            <p>
+            <h1 class="rubik-500">Eventos</h1>
+            <p class="rubik-300">
                 Confira os próximos jogos e acompanhe os eventos de cricket em tempo real.
             </p>
 
-            <h1>Em andamento:</h1>
+            <h1 class="rubik-500">Em andamento:</h1>
             <div class="gap">
                 <div class="cards-horizontal" id="cards-em-andamento"></div>
             </div>
 
-            <h1>Em destaque:</h1>
+            <h1 class="rubik-500">Em destaque:</h1>
             <div class="gap">
                 <div class="cards-horizontal" id="cards-container"></div>
             </div>
