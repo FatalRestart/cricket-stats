@@ -25,6 +25,8 @@
     
 </body>
 <script>
+
+    // pegando o ID atráves do parametro da URL
     const params = new Proxy(new URLSearchParams(window.location.search), {
     get: (searchParams, prop) => searchParams.get(prop),
     });
@@ -59,11 +61,17 @@
         document.getElementById('matchTitle').innerText += " " + match.matchTitle || 'Partida';
         document.getElementById('status').innerText += " " + status || 'Partida';
         document.getElementById('idJogo').innerText += " " + ID || 'Partida';
-        document.getElementById('eventoData').innerText = new Date(info?.startDate).toLocaleString();
-        document.getElementById('eventoStatus').innerText = "Em andamento";
+
+        setTimeout(function () {
+            location.reload()
+        }, 30000);
 
     } catch (error) {
         console.error('Erro ao buscar scorecard:', error);
+        setTimeout(function () {
+            window.location.reload()
+        }, 30000);
+        ;
     }
     }
     
