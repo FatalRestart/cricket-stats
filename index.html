@@ -92,23 +92,21 @@ function renderEventos(lista, containerId, emAndamento) {
             .map(cat => cat.categoryValue)
             .join(" vs ");
         console.log(evento.categories)
-        card.innerHTML = `
-            <div class="card-container">
-                <div class="status"></div>
-                <div class="teams">
-                    <h2 class="team1">${evento.categories[0].categoryValue}</h2>
-                    <h2 class="VS">VS</h2>
-                    <h2 class="team2">${evento.categories[1].categoryValue}</h2>
-                </div>
-                <h3 class="data">data</h3>
-            </div>
-        `;
 
-        if (emAndamento) {
-            card.addEventListener('click', () => fetchScorecard(evento.premiumCricketEventId));
-        } else {
-            card.addEventListener('click', () => showEventoDetails(evento));
-        }
+        card.innerHTML = `
+        <a href="./stats.html?id=${evento.premiumCricketEventId}">
+            <div class="card-container">
+                <div class="status texto"></div>
+                <div class="teams texto">
+                    <h2 class="team1 texto">${evento.categories[0].categoryValue}</h2>
+                    <h2 class="VS texto">VS</h2>
+                    <h2 class="team2 texto">${evento.categories[1].categoryValue}</h2>
+                </div>
+                <h3 class="data texto">${new Date(evento.startDate).toLocaleString("pt-br")}</h3>
+                
+            </div>
+        </a>
+        `;
 
         cardsContainer.appendChild(card);
     });
@@ -147,7 +145,7 @@ function showEventoDetails(evento) {
     document.getElementById('eventoNome').innerText = evento.eventName;
     document.getElementById('eventoCompeticao').innerText = evento.competition;
     document.getElementById('eventoFormato').innerText = evento.format;
-    document.getElementById('eventoData').innerText = new Date(evento.startDate).toLocaleString();
+    document.getElementById('eventoData').innerText = new Date(evento.startDate).toLocaleString("pt-br");
     document.getElementById('eventoStatus').innerText = evento.status;
 
     const teams = evento.categories
