@@ -91,12 +91,31 @@ function renderEventos(lista, containerId, emAndamento) {
             .filter(cat => cat.eventCategoryType === "Team1" || cat.eventCategoryType === "Team2")
             .map(cat => cat.categoryValue)
             .join(" vs ");
-        console.log(evento.categories)
+
+        switch(evento.status){
+            case 0:
+                matchStatus = "Não iniciado"
+                statusClass = "status0"
+                break
+            case 1:
+                matchStatus = "Em andamento"
+                statusClass = "status1"
+                break
+            case 3:
+                matchStatus = "Finalizado"
+                statusClass = "status3"
+                break
+            default:
+                matchStatus = ""
+                statusClass = "status0"
+        }
+
+        
 
         card.innerHTML = `
         <a href="./stats.html?id=${evento.premiumCricketEventId}" class="texto">
             <div class="card-container">
-                <div class="status texto"></div>
+                <div class="${statusClass} texto">${matchStatus}</div>
                 <div class="teams texto">
                     <h2 class="team1 texto">${evento.categories[0].categoryValue}</h2>
                     <h2 class="VS texto">VS</h2>

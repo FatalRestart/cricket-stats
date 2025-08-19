@@ -10,6 +10,7 @@ body{
     margin: 20px;
 }
 
+
 .center{
     display: flex;
     flex-direction: column;
@@ -47,8 +48,25 @@ body{
     justify-content: center;
 }
 
-.status{
+.status0{
+    background-color: rgba(0, 0, 0, 0.356);
+    width:33%;
+    height: 30px;
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+
+.status1{
     background-color: green;
+    width:33%;
+    height: 30px;
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+.status3{
+    background-color: rgb(161, 64, 64);
     width:33%;
     height: 30px;
     border-bottom-right-radius: 20px;
