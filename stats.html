@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+    const params = new Proxy(new URLSearchParams(window.location.search), {
+    get: (searchParams, prop) => searchParams.get(prop),
+    });
+    // Get the value of "some_key" in eg "https://example.com/?id=ID"
+    let ID = params.id; // "ID"
+    async function fetchScorecard(eventId) {
+    try {
+        const response = await fetch(`https://lsc.fn.sportradar.com/common/en/Etc:UTC/cricket/get_scorecard/${ID}`);
+        const scoreData = await response.json();
+        console.log(scoreData)
+
+    } catch (error) {
+        console.error('Erro ao buscar scorecard:', error);
+    }
+    }
+    
+document.addEventListener('DOMContentLoaded', fetchScorecard);
+</script>
+</html>

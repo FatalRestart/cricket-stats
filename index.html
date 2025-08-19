@@ -118,7 +118,6 @@ async function fetchScorecard(eventId) {
     try {
         const response = await fetch(`https://lsc.fn.sportradar.com/common/en/Etc:UTC/cricket/get_scorecard/${eventId}`);
         const scoreData = await response.json();
-        console.log(scoreData)
 
         const match = scoreData.doc[0]?.data.score;
         const info = match?.matchInfo;
@@ -129,6 +128,7 @@ async function fetchScorecard(eventId) {
         document.getElementById('eventoFormato').innerText = info?.format;
         document.getElementById('eventoData').innerText = new Date(info?.startDate).toLocaleString();
         document.getElementById('eventoStatus').innerText = "Em andamento";
+        console.log(eventId)
 
         let placar = "";
         innings?.forEach(inn => {
