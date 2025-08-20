@@ -57,12 +57,10 @@ header{
     justify-content: center;
 }
 .cards-horizontal{ 
-    display: flex;
-    flex-wrap: wrap;
-    width: 70%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 30px;
-    padding: 30px;
-    margin: 20px;
+    width: 80%;
 }
 
 
@@ -90,10 +88,8 @@ header{
 }
 
 .card-evento{
-    width: 52vh;
-    height: 13vh;
+    width: 100%;
     display: block;
-    padding: 30px;
 }
 
 .card-container{
