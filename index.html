@@ -84,8 +84,9 @@ function renderEventos(lista, containerId, emAndamento) {
     cardsContainer.innerHTML = '';
 
     lista.forEach(evento => {
-        const card = document.createElement('div');
-        card.className = 'card-evento';
+        const card = document.createElement('a');
+        card.className = 'card-evento card-container hyperlink';
+        card.href = `./stats1.html?id=${evento.premiumCricketEventId}`
 
         const teams = evento.categories
             .filter(cat => cat.eventCategoryType === "Team1" || cat.eventCategoryType === "Team2")
@@ -113,8 +114,7 @@ function renderEventos(lista, containerId, emAndamento) {
         
 
         card.innerHTML = `
-        <a href="./stats1.html?id=${evento.premiumCricketEventId}" class="hyperlink">
-            <div class="card-container">
+            
                 <div class="${statusClass} rubik-700">${matchStatus}</div>
                 <div class="teams">
                     <h2 class="team1 rubik-500">${evento.categories[0].categoryValue}</h2>
@@ -122,9 +122,6 @@ function renderEventos(lista, containerId, emAndamento) {
                     <h2 class="team2 rubik-500">${evento.categories[1].categoryValue}</h2>
                 </div>
                 <h3 class="data rubik-300">${new Date(evento.startDate).toLocaleString("pt-br")}</h3>
-                
-            </div>
-        </a>
         `;
 
         cardsContainer.appendChild(card);
