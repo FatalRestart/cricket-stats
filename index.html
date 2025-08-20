@@ -96,26 +96,26 @@ function renderEventos(lista, containerId, emAndamento) {
         switch(evento.status){
             case 0:
                 matchStatus = "Não iniciado"
-                statusClass = "status0"
+                statusClass = "naoInicio"
                 break
             case 1:
                 matchStatus = "Em andamento"
-                statusClass = "status1"
+                statusClass = "andamento"
                 break
             case 3:
                 matchStatus = "Finalizado"
-                statusClass = "status3"
+                statusClass = "finalizado"
                 break
             default:
                 matchStatus = ""
-                statusClass = "status0"
+                statusClass = "naoInicio"
         }
 
         
 
         card.innerHTML = `
             
-                <div class="${statusClass} rubik-700">${matchStatus}</div>
+                <div class="status ${statusClass} rubik-700">${matchStatus}</div>
                 <div class="teams">
                     <h2 class="team1 rubik-500">${evento.categories[0].categoryValue}</h2>
                     <h2 class="VS rubik-500">VS</h2>
