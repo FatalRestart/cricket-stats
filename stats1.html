@@ -34,7 +34,6 @@
         .card svg{width:100%;height:auto;display:block}
         .card.small{grid-column:span 6}
         .card.third{grid-column:span 4}
-        /* Nova classe para ocupar 2/3 da largura */
         .card.two-thirds {
             grid-column: span 8;
         }
@@ -70,33 +69,21 @@
             white-space: nowrap;
         }
         .over-zone span {
-            font-size: 0.60vw; /* Fonte responsiva */
-            white-space: normal; /* Permite a quebra de linha */
+            font-size: 0.6vw;
+            white-space: normal;
             display: block;
         }
         .over-zone.red {
             background-color: #ef4444;
             width: 15%;
         }
-        .over-zone.light-green {
-            background-color: #84cc16;
-            width: 15%;
-        }
         .over-zone.green {
             background-color: #22c55e;
-            width: 20%;
-        }
-        .over-zone.light-blue {
-            background-color: #38bdf8;
-            width: 15%;
+            width: 45.8%;
         }
         .over-zone.blue {
             background-color: #2563eb;
-            width: 15%;
-        }
-        .over-zone.dark-green {
-            background-color: #16a34a;
-            width: 20%;
+            width: 39.2%;
         }
     </style>
 </head>
@@ -115,9 +102,9 @@
     </div>
 
     <main class="grid">
-        <section class="card small" id="teamPerformance">
-            <h2>Desempenho dos Times</h2>
-            <div class="placeholder-text" id="teamPerformancePlaceholder">Carregando gráfico...</div>
+        <section class="card small" id="worm">
+            <h2>Worm (Corrida Acumulada)</h2>
+            <div class="placeholder-text" id="wormPlaceholder">Carregando gráfico...</div>
             <svg viewBox="0 0 900 320"></svg>
         </section>
         <section class="card small" id="overPerformance">
@@ -125,12 +112,9 @@
             <div class="placeholder-text" id="overPerformancePlaceholder">Carregando gráfico...</div>
             <svg viewBox="0 0 900 320"></svg>
             <div class="over-zones">
-                <div class="over-zone red"><span>Não entrar Over 1-3</span></div>
-                <div class="over-zone light-green"><span>Over 4-6 WICKET < 2</span></div>
-                <div class="over-zone green"><span>Over 7-10 WICKET < 3</span></div>
-                <div class="over-zone light-blue"><span>Over 11-13 WICKET < 4</span></div>
-                <div class="over-zone blue"><span>Over 14-16 WICKET < 5</span></div>
-                <div class="over-zone dark-green"><span>Over 17-20 WICKET < 6</span></div>
+                <div class="over-zone red"><span></span></div>
+                <div class="over-zone green"><span>Over 3-12 WICKET</span></div>
+                <div class="over-zone blue"><span>Zona de rebatedor</span></div>
             </div>
             <div class="win-chance-info">
                 <h3>Chance de Vitória</h3>
@@ -138,11 +122,7 @@
                 <div id="winChanceInfo"></div>
             </div>
         </section>
-        <section class="card" id="worm">
-            <h2>Worm (Corrida Acumulada)</h2>
-            <div class="placeholder-text" id="wormPlaceholder">Carregando gráfico...</div>
-            <svg viewBox="0 0 900 320"></svg>
-        </section>
+        
         <section class="card" id="playersTables">
             <h2>Jogadores</h2>
             <div class="placeholder-text" id="playersTablesPlaceholder">Carregando dados dos jogadores...</div>
@@ -181,10 +161,25 @@
                 <tbody></tbody>
             </table>
         </section>
+        <section class="card small" id="teamPerformance">
+            <h2>Desempenho dos Times</h2>
+            <div class="placeholder-text" id="teamPerformancePlaceholder">Carregando gráfico...</div>
+            <svg viewBox="0 0 900 320"></svg>
+        </section>
         <section class="card third" id="currentPlayers">
             <h2>Jogadores Atuais</h2>
             <div class="placeholder-text" id="currentPlayersPlaceholder">Carregando informações...</div>
             <div id="currentPlayersInfo"></div>
+        </section>
+        <section class="card small" id="batsmen">
+            <h2>Batsmen</h2>
+            <div class="placeholder-text" id="batsmenPlaceholder">Carregando gráfico...</div>
+            <svg viewBox="0 0 900 420"></svg>
+        </section>
+        <section class="card small" id="bowlers">
+            <h2>Bowlers</h2>
+            <div class="placeholder-text" id="bowlersPlaceholder">Carregando gráfico...</div>
+            <svg viewBox="0 0 900 420"></svg>
         </section>
         <section class="card two-thirds" id="manhattan">
             <h2>Manhattan (Runs por Over)</h2>
@@ -196,21 +191,7 @@
             <div class="placeholder-text" id="fowPlaceholder">Carregando gráfico...</div>
             <svg viewBox="0 0 900 320"></svg>
         </section>
-        <section class="card third" id="batsmen">
-            <h2>Batsmen</h2>
-            <div class="placeholder-text" id="batsmenPlaceholder">Carregando gráfico...</div>
-            <svg viewBox="0 0 900 420"></svg>
-        </section>
-        <section class="card third" id="bowlers">
-            <h2>Bowlers</h2>
-            <div class="placeholder-text" id="bowlersPlaceholder">Carregando gráfico...</div>
-            <svg viewBox="0 0 900 420"></svg>
-        </section>
-        <section class="card third" id="recent">
-            <h2>Overs Recentes</h2>
-            <div class="placeholder-text" id="recentPlaceholder">Carregando gráfico...</div>
-            <svg viewBox="0 0 900 240"></svg>
-        </section>
+        
     </main>
 
     <div class="tooltip" id="tip"></div>
@@ -222,7 +203,23 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
 });
 let ID = params.id;
 let controller;
-let firstRender = true;
+let lastMatchData = null;
+let lastWormData = null;
+let lastOverPerformanceData = null;
+let lastPlayerTablesData = { bats: null, bowls: null };
+let lastCurrentPlayersData = { striker: null, nonStriker: null, bowler: null };
+let lastFOWData = null;
+let lastBatsmenData = null;
+let lastBowlersData = null;
+let lastRecentData = null;
+let lastTeamPerformanceData = null;
+let lastManhattanData = null;
+
+// Helper para comparação profunda de objetos
+function areObjectsEqual(obj1, obj2) {
+    return JSON.stringify(obj1) === JSON.stringify(obj2);
+}
+
 // ---------------- LÓGICA DE NORMALIZAÇÃO E ANÁLISE (DO PYTHON) ----------------
 function walk(obj, result = []) {
     if (obj !== null && typeof obj === 'object') {
@@ -465,27 +462,76 @@ async function fetchScorecard() {
     try {
         const response = await fetch(`https://lsc.fn.sportradar.com/common/en/Etc:UTC/cricket/get_scorecard/${ID}`, {signal: controller.signal});
         const sr_json = await response.json();
-        
         const data = _pick_roles_and_stats(sr_json);
         const match = data.score;
         const innings = match.innings || [];
 
         // 1. EXTRAÇÃO E ATUALIZAÇÃO DO HEADER
-        let status;
-        switch(match.matchStatus){
-            case 0: status = "Não iniciado"; break;
-            case 1: case 2: status = "Em andamento"; break;
-            case 3: status = "Finalizado"; break;
-            default: status = "Indefinido";
+        if (!areObjectsEqual(match, lastMatchData)) {
+            let status;
+            switch(match.matchStatus){
+                case 0: status = "Não iniciado"; break;
+                case 1: case 2: status = "Em andamento"; break;
+                case 3: status = "Finalizado"; break;
+                default: status = "Indefinido";
+            }
+            document.getElementById('mainHeader').innerText = match.matchTitle || "Partida";
+            document.getElementById('matchTitle').innerHTML = `Jogo: <span>${match.matchTitle || 'Partida'}</span>`;
+            document.getElementById('status').innerHTML = `Status: <span>${status}</span>`;
+            document.getElementById('idJogo').innerHTML = `ID: <span>${ID}</span>`;
+            
+            const t1Name = innings?.[0]?.teamName || "Time 1";
+            const t2Name = innings?.[1]?.teamName || "Time 2";
+            document.getElementById('teams').innerHTML = `Times: <span class="timeaz">${t1Name}</span> VS <span class="timever">${t2Name}</span>`;
+
+            // Lógica de cálculo de taxa de corrida
+            const firstInnings = innings[0];
+            const secondInnings = innings[1];
+
+            if (firstInnings && secondInnings) {
+                const totalRunsTeam1 = parseInt(firstInnings.runs, 10) || 0;
+                const oversTotal = parseFloat(firstInnings.oversLimit || 20);
+                const currentRunsTeam2 = parseInt(secondInnings.runs, 10) || 0;
+                const currentOversTeam2 = parseFloat(secondInnings.overs) || 0;
+                
+                const requiredRuns = totalRunsTeam1 + 1 - currentRunsTeam2;
+                const remainingOvers = oversTotal - currentOversTeam2;
+
+                d3.select('#winChancePlaceholder').style('display', 'none');
+
+                if (requiredRuns <= 0) {
+                    d3.select('#winChanceInfo').html(`
+                        <h3>Time 2 venceu!</h3>
+                        <p>O Time 2 alcançou o alvo.</p>
+                    `);
+                } else if (remainingOvers <= 0) {
+                    d3.select('#winChanceInfo').html(`
+                        <h3>Time 2 foi derrotado</h3>
+                        <p>Fim do jogo. O Time 2 não alcançou o alvo.</p>
+                    `);
+                } else if (currentOversTeam2 > 0) {
+                    const currentRunRate = currentRunsTeam2 / currentOversTeam2;
+                    const requiredRunRate = requiredRuns / remainingOvers;
+                    
+                    const crrColor = currentRunRate > requiredRunRate ? '#4ade80' : '#f87171';
+
+                    d3.select('#winChanceInfo').html(`
+                        <p>Alvo do Time 2: <strong>${totalRunsTeam1 + 1}</strong></p>
+                        <p>Overs Restantes: <strong>${remainingOvers.toFixed(1)}</strong></p>
+                        <p>Taxa de Corrida Atual: <strong style="color: ${crrColor}">${currentRunRate.toFixed(2)}</strong></p>
+                        <p>Taxa de Corrida Necessária: <strong>${requiredRunRate.toFixed(2)}</strong></p>
+                    `);
+                } else {
+                    d3.select('#winChanceInfo').html(`
+                        <h3>Calculando...</h3>
+                        <p>Aguardando o Time 2 marcar a primeira corrida.</p>
+                    `);
+                }
+            } else {
+                d3.select('#winChancePlaceholder').style('display', 'block').text("Dados incompletos para o cálculo.");
+            }
+            lastMatchData = match;
         }
-        document.getElementById('mainHeader').innerText = match.matchTitle || "Partida";
-        document.getElementById('matchTitle').innerHTML = `Jogo: <span>${match.matchTitle || 'Partida'}</span>`;
-        document.getElementById('status').innerHTML = `Status: <span>${status}</span>`;
-        document.getElementById('idJogo').innerHTML = `ID: <span>${ID}</span>`;
-        
-        const t1Name = innings?.[0]?.teamName || "Time 1";
-        const t2Name = innings?.[1]?.teamName || "Time 2";
-        document.getElementById('teams').innerHTML = `Times: <span class="timeaz">${t1Name}</span> VS <span class="timever">${t2Name}</span>`;
 
         // 2. CONSOLIDAÇÃO DE DADOS PARA GRÁFICOS E TABELAS
         const overs_t1 = [];
@@ -500,110 +546,100 @@ async function fetchScorecard() {
                 const balls = o.firstInnings.split(',');
                 const runs = balls.map(t => _parse_ball_token(t).runs).reduce((a,b) => a+b, 0);
                 cumRuns_t1 += runs;
-                overs_t1.push({ over: overNum, cum_runs: cumRuns_t1 });
+                overs_t1.push({ over: overNum, cum_runs: cumRuns_t1, runs: runs, wickets: o.wickets || 0 });
             }
             if (o.secondInnings) {
                 const balls = o.secondInnings.split(',');
                 const runs = balls.map(t => _parse_ball_token(t).runs).reduce((a,b) => a+b, 0);
                 cumRuns_t2 += runs;
-                overs_t2.push({ over: overNum, cum_runs: cumRuns_t2 });
+                overs_t2.push({ over: overNum, cum_runs: cumRuns_t2, runs: runs, wickets: o.wickets || 0 });
             }
         }
         
-        // 3. RENDERIZAÇÃO DOS ELEMENTOS COM DADOS CONSOLIDADOS
-        renderPlayerTables(data.bats, data.bowls);
-        renderCurrentPlayers(data.strikerStats, data.nonStrikerStats, data.bowlerStats);
-
-        drawTeamPerformance('#teamPerformance svg', (match.innings||[]).map(i=>({ team:i.teamName, runs: parseInt(i.runs,10)||0 })));
+        // 3. RENDERIZAÇÃO DOS ELEMENTOS COM DADOS CONSOLIDADOS (COM VERIFICAÇÃO DE MUDANÇA)
+        if (!areObjectsEqual({bats: data.bats, bowls: data.bowls}, lastPlayerTablesData)) {
+            renderPlayerTables(data.bats, data.bowls);
+            lastPlayerTablesData = { bats: data.bats, bowls: data.bowls };
+        }
         
+        if (!areObjectsEqual({striker: data.strikerStats, nonStriker: data.nonStrikerStats, bowler: data.bowlerStats}, lastCurrentPlayersData)) {
+            renderCurrentPlayers(data.strikerStats, data.nonStrikerStats, data.bowlerStats);
+            lastCurrentPlayersData = { striker: data.strikerStats, nonStriker: data.nonStrikerStats, bowler: data.bowlerStats };
+        }
+        
+        const teamPerfData = (match.innings||[]).map(i=>({ team:i.teamName, runs: parseInt(i.runs,10)||0 }));
+        if (!areObjectsEqual(teamPerfData, lastTeamPerformanceData)) {
+            drawTeamPerformance('#teamPerformance svg', teamPerfData);
+            lastTeamPerformanceData = teamPerfData;
+        }
+
+        // Calcula a diferença cumulativa para o gráfico de Over Performance
+        let cum_t1 = 0;
+        let cum_t2 = 0;
         const overPerformanceData = data.bbs.map(d => {
             const runs1 = d.firstInnings ? d.firstInnings.split(',').map(t => _parse_ball_token(t).runs).reduce((a,b) => a+b, 0) : 0;
             const runs2 = d.secondInnings ? d.secondInnings.split(',').map(t => _parse_ball_token(t).runs).reduce((a,b) => a+b, 0) : 0;
-            return { over: +d.overNumber, team1: runs1, team2: runs2 };
+            cum_t1 += runs1;
+            cum_t2 += runs2;
+            const diff = cum_t2 - cum_t1;
+            return { over: +d.overNumber, team1: runs1, team2: runs2, diff: diff };
         });
 
-        let currentRuns1 = 0;
-        let currentRuns2 = 0;
-        const overPerformanceDataWithDiff = overPerformanceData.map(d => {
-            currentRuns1 += d.team1;
-            currentRuns2 += d.team2;
-            const diff = currentRuns1 - currentRuns2;
-            return { ...d, diff: diff };
-        });
-
-        drawOverPerformance('#overPerformance svg', overPerformanceDataWithDiff, match.innings?.map(i => ({ teamName: i.teamName })) || []);
+        if (!areObjectsEqual(overPerformanceData, lastOverPerformanceData)) {
+            drawOverPerformance('#overPerformance svg', overPerformanceData, match.innings?.map(i => ({ teamName: i.teamName })) || []);
+            lastOverPerformanceData = overPerformanceData;
+        }
         
-        drawWorm('#worm svg', {t1:overs_t1, t2:overs_t2, teams: [t1Name, t2Name]});
-        drawManhattan('#manhattan svg', overs_t1);
+        const wormData = {t1:overs_t1, t2:overs_t2, teams: [innings?.[0]?.teamName, innings?.[1]?.teamName]};
+        if (!areObjectsEqual(wormData, lastWormData)) {
+            drawWorm('#worm svg', wormData);
+            lastWormData = wormData;
+        }
+        
+        const manhattanData = overs_t1;
+        if (!areObjectsEqual(manhattanData, lastManhattanData)) {
+            drawManhattan('#manhattan svg', manhattanData);
+            lastManhattanData = manhattanData;
+        }
         
         const fow = (data.inn?.fallOfwickets || '').split(',').map(s=>s.trim()).filter(Boolean).map(s=>{
             const m = s.match(/(\S+)\s+(\d+)\/(\d+)\s*\((\d+)(?:\.(\d))?\)/);
             if(!m) return null;
-            return { name:m[1], runs:+m[2], wkts:+m[3], over:+m[4]+(m[5]? +m[5]/6:0)};
+            return { name:m[1], runs:+m[2], wkts:+m[3], over:parseInt(m[4])+((m[5]?parseInt(m[5])/6:0))};
         }).filter(Boolean);
-        drawFOW('#fow svg', fow);
-
-        const bat = data.bats.sort((a,b)=>b.runs-a.runs);
-        drawBatsmen('#batsmen svg', bat);
-
-        const bowl = data.bowls.sort((a,b)=>b.wickets-a.wickets);
-        drawBowlers('#bowlers svg', bowl);
-
-        const recent = (match.recentOvers||[]).map(o=>({ over:o.overNumber, runs:o.runs }));
-        drawRecent('#recent svg', recent);
-
-        // LÓGICA DE CÁLCULO DE TAXA DE CORRIDA
-        const inningsData = match.innings || [];
-        const firstInnings = inningsData[0];
-        const secondInnings = inningsData[1];
-
-        if (firstInnings && secondInnings) {
-            const totalRunsTeam1 = parseInt(firstInnings.runs, 10) || 0;
-            const oversTotal = parseFloat(firstInnings.oversLimit || 20); // Usa o limite de overs ou 20 por padrão
-            const currentRunsTeam2 = parseInt(secondInnings.runs, 10) || 0;
-            const currentOversTeam2 = parseFloat(secondInnings.overs) || 0;
-            
-            const requiredRuns = totalRunsTeam1 + 1 - currentRunsTeam2;
-            const remainingOvers = oversTotal - currentOversTeam2;
-
-            d3.select('#winChancePlaceholder').style('display', 'none');
-
-            if (requiredRuns <= 0) {
-                d3.select('#winChanceInfo').html(`
-                    <h3>Time 2 venceu!</h3>
-                    <p>O Time 2 alcançou o alvo.</p>
-                `);
-            } else if (remainingOvers <= 0) {
-                d3.select('#winChanceInfo').html(`
-                    <h3>Time 2 foi derrotado</h3>
-                    <p>Fim do jogo. O Time 2 não alcançou o alvo.</p>
-                `);
-            } else if (currentOversTeam2 > 0) {
-                const currentRunRate = currentRunsTeam2 / currentOversTeam2;
-                const requiredRunRate = requiredRuns / remainingOvers;
-                
-                const crrColor = currentRunRate > requiredRunRate ? '#4ade80' : '#f87171';
-
-                d3.select('#winChanceInfo').html(`
-                    <p>Alvo do Time 2: <strong>${totalRunsTeam1 + 1}</strong></p>
-                    <p>Overs Restantes: <strong>${remainingOvers.toFixed(1)}</strong></p>
-                    <p>Taxa de Corrida Atual: <strong style="color: ${crrColor}">${currentRunRate.toFixed(2)}</strong></p>
-                    <p>Taxa de Corrida Necessária: <strong>${requiredRunRate.toFixed(2)}</strong></p>
-                `);
-            } else {
-                d3.select('#winChanceInfo').html(`
-                    <h3>Calculando...</h3>
-                    <p>Aguardando o Time 2 marcar a primeira corrida.</p>
-                `);
-            }
-        } else {
-            d3.select('#winChancePlaceholder').style('display', 'block').text("Dados incompletos para o cálculo.");
+        if (!areObjectsEqual(fow, lastFOWData)) {
+            drawFOW('#fow svg', fow);
+            lastFOWData = fow;
         }
 
+        const bat = data.bats.sort((a,b)=>b.runs-a.runs);
+        if (!areObjectsEqual(bat, lastBatsmenData)) {
+            drawBatsmen('#batsmen svg', bat);
+            lastBatsmenData = bat;
+        }
+
+        const bowl = data.bowls.sort((a,b)=>b.wickets-a.wickets);
+        if (!areObjectsEqual(bowl, lastBowlersData)) {
+            drawBowlers('#bowlers svg', bowl);
+            lastBowlersData = bowl;
+        }
+
+        const recent = (match.recentOvers||[]).map(o=>{
+            let runs = 0;
+            let wickets = 0;
+            if (o.balls) {
+                const balls = o.balls.split(',');
+                runs = balls.map(t => _parse_ball_token(t).runs).reduce((a,b) => a+b, 0);
+                wickets = balls.filter(t => t.toLowerCase().includes('w')).length;
+            }
+            return { over: o.overNumber, runs: runs, wickets: wickets };
+        });
+        if (!areObjectsEqual(recent, lastRecentData)) {
+            drawRecent('#recent svg', recent);
+            lastRecentData = recent;
+        }
 
         d3.selectAll('.placeholder-text').style('display', 'none');
-
-        firstRender = false;
     } catch (error) {
         if (error.name !== "AbortError") console.error('Erro ao buscar scorecard:', error);
         d3.selectAll('.placeholder-text').text("Erro ao carregar os dados. Verifique o ID da partida.");
@@ -688,13 +724,14 @@ function renderCurrentPlayers(striker, nonStriker, bowler) {
 
 // =================== TOOLTIP ===================
 const tip = d3.select('#tip');
-const showTip = (html, evt)=>{ tip.html(html).style('opacity',1).style('left',(evt.pageX+12)+'px').style('top',(evt.pageY-12)+'px'); };
+const showTip = (html, evt)=>{ tip.html(html).style('opacity',1).style('left',(evt.clientX+12)+'px').style('top',(evt.clientY-12)+'px'); };
 const hideTip = ()=> tip.style('opacity',0);
 
 // =================== GRÁFICOS COM ANIMAÇÕES ===================
 function drawWorm(sel,data){
     const svg=d3.select(sel); svg.selectAll('*').remove();
     if(data.t1.length === 0 && data.t2.length === 0) { d3.select('#wormPlaceholder').style('display', 'block').text("Dados do Worm não disponíveis."); return; }
+    d3.select('#wormPlaceholder').style('display', 'none');
     const W=900,H=320,m={t:20,r:20,b:40,l:50};
     const allData = [...data.t1, ...data.t2];
     const maxRuns = d3.max(allData,d=>d.cum_runs)||0;
@@ -707,10 +744,7 @@ function drawWorm(sel,data){
     const line=d3.line().x(d=>x(d.over)).y(d=>y(d.cum_runs));
     
     const path1 = g.append('path').datum(data.t1).attr('fill','none').attr('stroke','#3b82f6').attr('stroke-width',2).attr('d',line);
-    if(firstRender){ const totalLength = path1.node().getTotalLength(); path1.attr("stroke-dasharray", totalLength + " " + totalLength).attr("stroke-dashoffset", totalLength).transition().duration(1000).attr("stroke-dashoffset", 0); }
-
     const path2 = g.append('path').datum(data.t2).attr('fill','none').attr('stroke','#f97316').attr('stroke-width',2).attr('d',line);
-    if(firstRender){ const totalLength = path2.node().getTotalLength(); path2.attr("stroke-dasharray", totalLength + " " + totalLength).attr("stroke-dashoffset", totalLength).transition().delay(500).duration(1000).attr("stroke-dashoffset", 0); }
     
     const legend = svg.append("g").attr("class", "legend").attr("transform", "translate(" + (W - 150) + "," + (m.t + 10) + ")");
     legend.append("rect").attr("x", 0).attr("y", 0).attr("width", 10).attr("height", 10).attr("fill", '#3b82f6');
@@ -721,97 +755,274 @@ function drawWorm(sel,data){
 
 function drawManhattan(sel, data) {
     const svg = d3.select(sel); svg.selectAll('*').remove();
-    if(data.length === 0) { d3.select('#manhattanPlaceholder').style('display', 'block').text("Dados do Manhattan não disponíveis."); return; }
+    const cleanData = data.filter(d => d.over > 0);
+    if(cleanData.length === 0) { d3.select('#manhattanPlaceholder').style('display', 'block').text("Dados do Manhattan não disponíveis."); return; }
+    d3.select('#manhattanPlaceholder').style('display', 'none');
     const W=900, H=320, m={t:20,r:20,b:40,l:50};
-    const x = d3.scaleBand().domain(data.map(d=>d.over)).range([m.l, W-m.r]).padding(0.2);
-    const y = d3.scaleLinear().domain([0, d3.max(data, d => d.runs) || 0]).range([H-m.b, m.t]);
+    const x = d3.scaleBand().domain(cleanData.map(d=>d.over)).range([m.l, W-m.r]).padding(0.2);
+    const y = d3.scaleLinear().domain([0, d3.max(cleanData, d => d.runs) * 1.2 || 10]).range([H-m.b, m.t]);
     const g=svg.append('g');
     g.append('g').attr('transform', `translate(0,${H-m.b})`).call(d3.axisBottom(x));
     g.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y));
-    g.selectAll('rect').data(data).join(enter => enter.append('rect').attr('x', d => x(d.over)).attr('y', y(0)).attr('width', x.bandwidth()).attr('height', 0).attr('fill', '#5cc8ff').call(enter => enter.transition().duration(800).attr('y', d => y(d.runs)).attr('height', d => y(0) - y(d.runs))), update => update.transition().duration(500).attr('y', d => y(d.runs)).attr('height', d => y(0) - y(d.runs)), exit => exit.remove()).on('mouseover', (event, d) => { showTip(`Over ${d.over}: ${d.runs} runs, ${d.wkts} Wickets`, event); }).on('mouseout', hideTip);
+    g.selectAll('rect').data(cleanData).join(
+        enter => enter.append('rect')
+            .attr('x', d => x(d.over))
+            .attr('y', H - m.b) 
+            .attr('width', x.bandwidth())
+            .attr('height', 0)
+            .attr('fill', '#5cc8ff')
+            .transition()
+            .duration(500)
+            .attr('y', d => y(d.runs))
+            .attr('height', d => y(0) - y(d.runs)),
+        update => update.transition()
+            .duration(500)
+            .attr('x', d => x(d.over))
+            .attr('y', d => y(d.runs))
+            .attr('width', x.bandwidth())
+            .attr('height', d => y(0) - y(d.runs)),
+        exit => exit.remove()
+    ).on('mouseover', (event, d) => { showTip(`Over ${d.over}: ${d.runs} runs`, event); }).on('mousemove', (event, d) => { showTip(`Over ${d.over}: ${d.runs} runs`, event); }).on('mouseout', hideTip);
 }
 
 function drawFOW(sel,data){
     const svg=d3.select(sel); svg.selectAll('*').remove();
     if(data.length === 0) { d3.select('#fowPlaceholder').style('display', 'block').text("Dados de queda de wickets não disponíveis."); return; }
+    d3.select('#fowPlaceholder').style('display', 'none');
     const W=900,H=320,m={t:20,r:20,b:40,l:50};
-    const x=d3.scaleLinear().domain([0,d3.max(data,d=>d.over)||20]).range([m.l,W-m.r]);
-    const y=d3.scaleLinear().domain([0,d3.max(data,d=>d.runs)||0]).range([H-m.b,m.t]);
+    const x=d3.scaleLinear().domain([0,d3.max(data,d=>d.over)*1.2||20]).range([m.l,W-m.r]);
+    const y=d3.scaleLinear().domain([0,d3.max(data,d=>d.runs)*1.2||0]).range([H-m.b,m.t]);
     const g=svg.append('g');
     g.append('g').attr('transform',`translate(0,${H-m.b})`).call(d3.axisBottom(x));
     g.append('g').attr('transform',`translate(${m.l},0)`).call(d3.axisLeft(y));
-    g.selectAll('circle').data(data).join(enter => enter.append('circle').attr('cx',d=>x(d.over)).attr('cy',y(0)).attr('r',0).attr('fill','#f87171').call(enter=>enter.transition().duration(800).attr('cy',d=>y(d.runs)).attr('r',5)), update => update.transition().duration(500).attr('cx',d=>x(d.over)).attr('cy',d=>y(d.runs)), exit => exit.remove());
+    g.selectAll('circle').data(data).join(
+        enter => enter.append('circle')
+            .attr('cx',d=>x(d.over))
+            .attr('cy',d=>y(d.runs))
+            .attr('r',5)
+            .attr('fill','#f87171')
+            .on('mouseover', (event, d) => { showTip(`${d.name} (${d.runs}/${d.wkts})<br>Over: ${d.over.toFixed(1)}`, event); })
+            .on('mousemove', (event, d) => { showTip(`${d.name} (${d.runs}/${d.wkts})<br>Over: ${d.over.toFixed(1)}`, event); })
+            .on('mouseout', hideTip),
+        update => update.transition().duration(500).attr('cx',d=>x(d.over)).attr('cy',d=>y(d.runs)),
+        exit => exit.remove()
+    );
 }
 
 function drawBatsmen(sel,data){
     const svg=d3.select(sel); svg.selectAll('*').remove();
     if(data.length === 0) { d3.select('#batsmenPlaceholder').style('display', 'block').text("Dados dos batsmen não disponíveis."); return; }
+    d3.select('#batsmenPlaceholder').style('display', 'none');
     const W=900,H=420,m={t:20,r:20,b:40,l:100};
-    const x=d3.scaleLinear().domain([0,d3.max(data,d=>d.runs)||0]).range([m.l,W-m.r]);
+    const x=d3.scaleLinear().domain([0,d3.max(data,d=>d.runs)*1.2||10]).range([m.l,W-m.r]);
     const y=d3.scaleBand().domain(data.map(d=>d.name)).range([m.t,H-m.b]).padding(0.1);
     const g=svg.append('g');
     g.append('g').attr('transform',`translate(0,${H-m.b})`).call(d3.axisBottom(x));
     g.append('g').attr('transform',`translate(${m.l},0)`).call(d3.axisLeft(y));
-    g.selectAll('rect').data(data).join(enter => enter.append('rect').attr('x',x(0)).attr('y',d=>y(d.name)).attr('height',y.bandwidth()).attr('width',0).attr('fill','var(--accent)').call(enter=>enter.transition().duration(800).attr('width',d=>x(d.runs)-x(0))), update => update.transition().duration(500).attr('width',d=>x(d.runs)-x(0)), exit => exit.remove());
+    g.selectAll('rect').data(data).join(
+        enter => enter.append('rect')
+            .attr('x',x(0))
+            .attr('y',d=>y(d.name))
+            .attr('height',y.bandwidth())
+            .attr('width',d=>x(d.runs)-x(0))
+            .attr('fill','var(--accent)'),
+        update => update.transition().duration(500)
+            .attr('x',x(0))
+            .attr('y',d=>y(d.name))
+            .attr('height',y.bandwidth())
+            .attr('width',d=>x(d.runs)-x(0)),
+        exit => exit.remove()
+    ).on('mouseover', (event, d) => { showTip(`${d.name}: ${d.runs} Runs, ${d.balls} Balls`, event); }).on('mousemove', (event, d) => { showTip(`${d.name}: ${d.runs} Runs, ${d.balls} Balls`, event); }).on('mouseout', hideTip);
 }
 
 function drawBowlers(sel,data){
     const svg=d3.select(sel); svg.selectAll('*').remove();
     if(data.length === 0) { d3.select('#bowlersPlaceholder').style('display', 'block').text("Dados dos bowlers não disponíveis."); return; }
+    d3.select('#bowlersPlaceholder').style('display', 'none');
     const W=900,H=420,m={t:20,r:20,b:40,l:120};
-    const x=d3.scaleLinear().domain([0,d3.max(data,d=>d.wickets)||0]).range([m.l,W-m.r]);
+    const x=d3.scaleLinear().domain([0,d3.max(data,d=>d.wickets)*1.2||1]).range([m.l,W-m.r]);
     const y=d3.scaleBand().domain(data.map(d=>d.name)).range([m.t,H-m.b]).padding(0.1);
     const g=svg.append('g');
     g.append('g').attr('transform',`translate(0,${H-m.b})`).call(d3.axisBottom(x));
     g.append('g').attr('transform',`translate(${m.l},0)`).call(d3.axisLeft(y));
-    g.selectAll('rect').data(data).join(enter => enter.append('rect').attr('x',x(0)).attr('y',d=>y(d.name)).attr('height',y.bandwidth()).attr('width',0).attr('fill','#f87171').call(enter=>enter.transition().duration(800).attr('width',d=>x(d.wickets)-x(0))), update => update.transition().duration(500).attr('width',d=>x(d.wickets)-x(0)), exit => exit.remove());
+    g.selectAll('rect').data(data).join(
+        enter => enter.append('rect')
+            .attr('x',x(0))
+            .attr('y',d=>y(d.name))
+            .attr('height',y.bandwidth())
+            .attr('width',d=>x(d.wickets)-x(0))
+            .attr('fill','#f87171'),
+        update => update.transition().duration(500)
+            .attr('x',x(0))
+            .attr('y',d=>y(d.name))
+            .attr('height',y.bandwidth())
+            .attr('width',d=>x(d.wickets)-x(0)),
+        exit => exit.remove()
+    ).on('mouseover', (event, d) => { showTip(`${d.name}: ${d.wickets} Wkts, ${d.runs} Runs`, event); }).on('mousemove', (event, d) => { showTip(`${d.name}: ${d.wickets} Wkts, ${d.runs} Runs`, event); }).on('mouseout', hideTip);
 }
 
 function drawRecent(sel,data){
     const svg=d3.select(sel); svg.selectAll('*').remove();
     if(data.length === 0) { d3.select('#recentPlaceholder').style('display', 'block').text("Dados de overs recentes não disponíveis."); return; }
+    d3.select('#recentPlaceholder').style('display', 'none');
     const W=900,H=240,m={t:20,r:20,b:40,l:50};
     const x=d3.scaleBand().domain(data.map(d=>d.over)).range([m.l,W-m.r]).padding(0.1);
-    const y=d3.scaleLinear().domain([0,d3.max(data,d=>d.runs)||0]).range([H-m.b,m.t]);
+    const y=d3.scaleLinear().domain([0,d3.max(data,d=>d.runs)*1.2||10]).range([H-m.b,m.t]);
     const g=svg.append('g');
     g.append('g').attr('transform',`translate(0,${H-m.b})`).call(d3.axisBottom(x));
     g.append('g').attr('transform',`translate(${m.l},0)`).call(d3.axisLeft(y));
-    g.selectAll('rect').data(data).join(enter => enter.append('rect').attr('x',d=>x(d.over)).attr('width',x.bandwidth()).attr('y',y(0)).attr('height',0).attr('fill','var(--accent)').call(enter=>enter.transition().duration(800).attr('y',d=>y(d.runs)).attr('height',d=>y(0)-y(d.runs))), update => update.transition().duration(500).attr('y',d=>y(d.runs)).attr('height',d=>y(0)-y(d.runs)), exit => exit.remove());
+    g.selectAll('rect').data(data).join(
+        enter => enter.append('rect')
+            .attr('x',d=>x(d.over))
+            .attr('width',x.bandwidth())
+            .attr('y',H-m.b)
+            .attr('height',0)
+            .attr('fill','var(--accent)')
+            .transition()
+            .duration(500)
+            .attr('y',d=>y(d.runs))
+            .attr('height',d=>y(0)-y(d.runs)),
+        update => update.transition()
+            .duration(500)
+            .attr('x',d=>x(d.over))
+            .attr('width',x.bandwidth())
+            .attr('y',d=>y(d.runs))
+            .attr('height',d=>y(0)-y(d.runs)),
+        exit => exit.remove()
+    ).on('mouseover', (event, d) => { showTip(`Over ${d.over}: ${d.runs} runs, ${d.wickets} Wkts`, event); }).on('mousemove', (event, d) => { showTip(`Over ${d.over}: ${d.runs} runs, ${d.wickets} Wkts`, event); }).on('mouseout', hideTip);
 }
 
 function drawTeamPerformance(sel,data){
     const svg=d3.select(sel); svg.selectAll('*').remove();
     if(data.length === 0) { d3.select('#teamPerformancePlaceholder').style('display', 'block').text("Dados de desempenho de times não disponíveis."); return; }
+    d3.select('#teamPerformancePlaceholder').style('display', 'none');
     const W=900,H=320,m={t:20,r:20,b:40,l:100};
-    const x=d3.scaleLinear().domain([0,d3.max(data,d=>d.runs)||0]).range([m.l,W-m.r]);
+    const x=d3.scaleLinear().domain([0,d3.max(data,d=>d.runs)*1.2||10]).range([m.l,W-m.r]);
     const y=d3.scaleBand().domain(data.map(d=>d.team)).range([m.t,H-m.b]).padding(0.3);
     const colors=["#3b82f6","#f97316"];
     const g=svg.append('g');
     g.append('g').attr('transform',`translate(0,${H-m.b})`).call(d3.axisBottom(x));
     g.append('g').attr('transform',`translate(${m.l},0)`).call(d3.axisLeft(y));
-    g.selectAll('rect').data(data).join(enter => enter.append('rect').attr('x',x(0)).attr('y',(d,i)=>y(d.team)).attr('height',y.bandwidth()).attr('width',0).attr('fill',(d,i)=>colors[i%colors.length]).call(enter=>enter.transition().duration(800).attr('width',d=>x(d.runs)-x(0))), update => update.transition().duration(500).attr('width',d=>x(d.runs)-x(0)), exit => exit.remove());
+    g.selectAll('rect').data(data).join(
+        enter => enter.append('rect')
+            .attr('x',x(0))
+            .attr('y',(d,i)=>y(d.team))
+            .attr('height',y.bandwidth())
+            .attr('width',0)
+            .attr('fill',(d,i)=>colors[i%colors.length])
+            .on('mouseover', (event, d) => { showTip(`${d.team}: ${d.runs} Runs`, event); })
+            .on('mousemove', (event, d) => { showTip(`${d.team}: ${d.runs} Runs`, event); })
+            .on('mouseout', hideTip)
+            .transition()
+            .duration(500)
+            .attr('width',d=>x(d.runs)-x(0)),
+        update => update
+            .on('mouseover', (event, d) => { showTip(`${d.team}: ${d.runs} Runs`, event); })
+            .on('mousemove', (event, d) => { showTip(`${d.team}: ${d.runs} Runs`, event); })
+            .on('mouseout', hideTip)
+            .transition()
+            .duration(500)
+            .attr('width',d=>x(d.runs)-x(0)),
+        exit => exit.remove()
+    );
 }
 
 function drawOverPerformance(sel,data,teams){
     const svg=d3.select(sel); svg.selectAll('*').remove();
     if(data.length === 0) { d3.select('#overPerformancePlaceholder').style('display', 'block').text("Dados de pontos por over não disponíveis."); return; }
+    d3.select('#overPerformancePlaceholder').style('display', 'none');
     const W=900,H=320,m={t:20,r:20,b:40,l:50};
     const maxRuns = d3.max(data,d=>Math.max(d.team1,d.team2)) || 0;
     const y=d3.scaleLinear().domain([0,maxRuns*1.1]).range([H-m.b,m.t]);
-    const x=d3.scaleBand().domain(data.map(d=>d.over)).range([m.l,W-m.r]).padding(0.2);
+    const oversTotal = 20;
+    const allOvers = d3.range(1, oversTotal + 1);
+    const x=d3.scaleBand().domain(allOvers).range([m.l,W-m.r]).padding(0.2);
     const g=svg.append('g');
     g.append('g').attr('transform',`translate(0,${H-m.b})`).call(d3.axisBottom(x));
     g.append('g').attr('transform',`translate(${m.l},0)`).call(d3.axisLeft(y));
     const barWidth=x.bandwidth()/2;
-    g.selectAll('.bar1').data(data).join(enter=>enter.append('rect').attr('class','bar1').attr('x',d=>x(d.over)).attr('y',y(0)).attr('width',barWidth).attr('height',0).attr('fill','#3b82f6').call(enter=>enter.transition().duration(800).attr('y',d=>y(d.team1)).attr('height',d=>y(0)-y(d.team1))),update=>update.transition().duration(500).attr('y',d=>y(d.team1)).attr('height',d=>y(0)-y(d.team1)),exit=>exit.remove());
-    g.selectAll('.bar2').data(data).join(enter=>enter.append('rect').attr('class','bar2').attr('x',d=>x(d.over)+barWidth).attr('y',y(0)).attr('width',barWidth).attr('height',0).attr('fill','#f97316').call(enter=>enter.transition().duration(800).attr('y',d=>y(d.team2)).attr('height',d=>y(0)-y(d.team2))),update=>update.transition().duration(500).attr('y',d=>y(d.team2)).attr('height',d=>y(0)-y(d.team2)),exit=>exit.remove());
     
-    g.selectAll('.diff-text').data(data).join(enter=>enter.append('text').attr('class','diff-text').attr('x',d=>x(d.over)+barWidth*1.5).attr('y',d=>y(d.team2)-5).text(d=>d.diff<0?'-':`+${d.diff}`).attr('text-anchor','middle').attr('fill',d=>d.diff<0?'#f87171':'#4ade80').style('font-size','10px'),update=>update.transition().duration(500).attr('y',d=>y(d.team2)-5).text(d=>d.diff<0?'-':`+${d.diff}`).attr('fill',d=>d.diff<0?'#f87171':'#4ade80'),exit=>exit.remove());
+    // Team 1 Bars with animation
+    g.selectAll('.bar1').data(data, d => d.over).join(
+        enter => enter.append('rect')
+            .attr('class', 'bar1')
+            .attr('x', d => x(d.over))
+            .attr('y', H - m.b)
+            .attr('width', barWidth)
+            .attr('height', 0)
+            .attr('fill', '#3b82f6')
+            .transition().duration(500)
+            .attr('y', d => y(d.team1))
+            .attr('height', d => y(0) - y(d.team1)),
+        update => update
+            .attr('fill', d3.color('#3b82f6').brighter(0.8))
+            .transition().duration(500)
+            .attr('y', d => y(d.team1))
+            .attr('height', d => y(0) - y(d.team1))
+            .transition().delay(500).duration(200).attr('fill', '#3b82f6'),
+        exit => exit.remove()
+    ).on('mouseover', (event, d) => { showTip(`Over ${d.over}: ${d.team1} Runs`, event); }).on('mousemove', (event, d) => { showTip(`Over ${d.over}: ${d.team1} Runs`, event); }).on('mouseout', hideTip);
+
+    // Team 1 runs text with animation
+    g.selectAll('.text1').data(data, d => d.over).join(
+        enter => enter.append('text')
+            .attr('class', 'text1')
+            .attr('x', d => x(d.over) + barWidth / 2)
+            .attr('y', d => y(d.team1) - 5)
+            .attr('text-anchor', 'middle')
+            .text(d => d.team1 > 0 ? d.team1 : '')
+            .style('font-size', '10px')
+            .attr('fill', 'var(--text)')
+            .style('opacity', 0)
+            .transition().delay(500).duration(200).style('opacity', 1),
+        update => update.transition().duration(500)
+            .attr('y', d => y(d.team1) - 5)
+            .text(d => d.team1 > 0 ? d.team1 : ''),
+        exit => exit.remove()
+    );
+
+    // Team 2 Bars with animation
+    g.selectAll('.bar2').data(data, d => d.over).join(
+        enter => enter.append('rect')
+            .attr('class', 'bar2')
+            .attr('x', d => x(d.over) + barWidth)
+            .attr('y', H - m.b)
+            .attr('width', barWidth)
+            .attr('height', 0)
+            .attr('fill', '#f97316')
+            .transition().duration(500)
+            .attr('y', d => y(d.team2))
+            .attr('height', d => y(0) - y(d.team2)),
+        update => update
+            .attr('fill', d3.color('#f97316').brighter(0.8))
+            .transition().duration(500)
+            .attr('y', d => y(d.team2))
+            .attr('height', d => y(0) - y(d.team2))
+            .transition().delay(500).duration(200).attr('fill', '#f97171'),
+        exit => exit.remove()
+    ).on('mouseover', (event, d) => { showTip(`Over ${d.over}: ${d.team2} Runs`, event); }).on('mousemove', (event, d) => { showTip(`Over ${d.over}: ${d.team2} Runs`, event); }).on('mouseout', hideTip);
+
+    g.selectAll('.diff-text').data(data, d => d.over).join(
+        enter => enter.append('text').attr('class','diff-text')
+            .attr('x',d=>x(d.over)+barWidth*1.5)
+            .attr('y',d=>y(d.team2)-15)
+            .text(d=>d.diff<0?d.diff:`+${d.diff}`)
+            .attr('text-anchor','middle')
+            .attr('fill',d=>d.diff<0?'#f87171':'#4ade80')
+            .style('font-size','10px'),
+        update => update.transition().duration(500)
+            .attr('y',d=>y(d.team2)-15)
+            .text(d=>d.diff<0?d.diff:`+${d.diff}`)
+            .attr('fill',d=>d.diff<0?'#f87171':'#4ade80'),
+        exit => exit.remove()
+    );
 
     if(teams.length >= 2){ svg.append('circle').attr('cx',W-150).attr('cy',30).attr('r',6).attr('fill','#3b82f6'); svg.append('text').attr('x',W-140).attr('y',34).text(teams[0].teamName).attr('fill','var(--text)').style('font-size','12px'); svg.append('circle').attr('cx',W-150).attr('cy',50).attr('r',6).attr('fill','#f97316'); svg.append('text').attr('x',W-140).attr('y',54).text(teams[1].teamName).attr('fill','var(--text)').style('font-size','12px'); }
 }
 
 document.addEventListener('DOMContentLoaded', fetchScorecard);
+setInterval(fetchScorecard, 1000);
 </script>
+
 
 </html>
